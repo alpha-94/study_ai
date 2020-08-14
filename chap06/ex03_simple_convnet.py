@@ -18,9 +18,9 @@ class SimpleConvNet:
     activation : 활성화 함수 - 'relu' 혹은 'sigmoid'
     weight_init_std : 가중치의 표준편차 지정（e.g. 0.01）
         'relu'나 'he'로 지정하면 'He 초깃값'으로 설정
-        'sigmoid'나 'xavier'로 지정하면 'Xavier 초깃값'으로 설정
+        'sigmoid'나 'xavier'로 지정하면 'Xavier 초기값'으로 설정
     """
-    def __init__(self, input_dim=(1, 28, 28), 
+    def __init__(self, input_dim=(1, 28, 28), # MNIST 데이터
                  conv_param={'filter_num':30, 'filter_size':5, 'pad':0, 'stride':1},
                  hidden_size=100, output_size=10, weight_init_std=0.01):
         filter_num = conv_param['filter_num']
@@ -34,13 +34,13 @@ class SimpleConvNet:
         # 가중치 초기화
         self.params = {}
         self.params['W1'] = weight_init_std * \
-                            np.random.randn(filter_num, input_dim[0], filter_size, filter_size)
+                            np.random.randn(filter_num, input_dim[0], filter_size, filter_size) # 컨벌루션
         self.params['b1'] = np.zeros(filter_num)
         self.params['W2'] = weight_init_std * \
-                            np.random.randn(pool_output_size, hidden_size)
+                            np.random.randn(pool_output_size, hidden_size) # 신경망
         self.params['b2'] = np.zeros(hidden_size)
         self.params['W3'] = weight_init_std * \
-                            np.random.randn(hidden_size, output_size)
+                            np.random.randn(hidden_size, output_size) # 출력단
         self.params['b3'] = np.zeros(output_size)
 
         # 계층 생성
@@ -55,7 +55,7 @@ class SimpleConvNet:
 
         self.last_layer = SoftmaxWithLoss()
 
-    def predict(self, x):
+    def predict(self, x): # 예측 // 순전파 데이터 흐름
         for layer in self.layers.values():
             x = layer.forward(x)
 
@@ -72,7 +72,7 @@ class SimpleConvNet:
         y = self.predict(x)
         return self.last_layer.forward(y, t)
 
-    def accuracy(self, x, t, batch_size=100):
+    def accuracy(self, x, t, batch_size=100): # 정확도
         if t.ndim != 1 : t = np.argmax(t, axis=1)
         
         acc = 0.0
